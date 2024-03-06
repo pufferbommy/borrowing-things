@@ -20,7 +20,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         <Header />
         <div className="h-screen flex pt-14">
           <main className="w-full overflow-auto p-4">{children}</main>
-          <Toaster richColors />
+          <Toaster richColors theme="light" />
         </div>
       </body>
     </html>

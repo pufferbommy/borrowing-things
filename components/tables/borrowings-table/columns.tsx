@@ -1,10 +1,8 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Borrowing } from ".";
+
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import { PenIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,7 +13,10 @@ import {
 
 import DeleteBorrowingAlertDialog from "@/components/alert-dialogs/delete-borrowing-alert-dialog";
 import EditBorrowDialog from "@/components/dialogs/edit-borrow-dialog";
-import axios from "axios";
+import * as borrowingsService from "@/services/borrowingsService";
+import { Borrowing } from "@/interfaces/borrowing";
+import { updateBorrowing } from "@/stores/borrowings";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<Borrowing>[] = [
   {
@@ -44,11 +45,17 @@ export const columns: ColumnDef<Borrowing>[] = [
         <Select
           value={status}
           onValueChange={(value) => {
-            axios.patch("api/borrowings", {
-              id: row.original.id,
-              status: value,
-            });
-            location.reload();
+            borrowingsService
+              .updateBorrowingStatus(row.original.id, value)
+              .then((response) => {
+                if (response.status === 200) {
+                  updateBorrowing({
+                    ...row.original,
+                    status: value,
+                  });
+                  toast.success(response.data.message);
+                }
+              });
           }}
         >
           <SelectTrigger className="w-[150px]">

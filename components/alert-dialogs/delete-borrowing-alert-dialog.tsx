@@ -12,12 +12,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "../ui/button";
 import { TrashIcon } from "lucide-react";
-import axios from "axios";
+import * as borrowingsService from "@/services/borrowingsService";
+import { removeBorrowing } from "@/stores/borrowings";
+import { toast } from "sonner";
 
 const DeleteBorrowingAlertDialog = ({ id }: { id: number }) => {
   const handleActionClick = async () => {
-    await axios.delete(`api/borrowings?id=${id}`);
-    location.reload();
+    const response = await borrowingsService.deleteBorrowing(id);
+    if (response.status === 200) {
+      removeBorrowing(id);
+      toast.success(response.data.message);
+    }
   };
 
   return (

@@ -23,8 +23,9 @@ import { Calendar } from "../ui/calendar";
 import { cn } from "@/lib/utils";
 import { th } from "date-fns/locale";
 import { toast } from "sonner";
-import axios from "axios";
-import { Borrowing } from "../tables/borrowings-table";
+import { Borrowing } from "@/interfaces/borrowing";
+import { updateBorrowing } from "@/stores/borrowings";
+import * as borrowingsService from "@/services/borrowingsService";
 
 const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
   const [borrowerName, setBorrowerName] = useState<string>(data.borrowerName);
@@ -55,22 +56,41 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
     if (!borrowDate) {
       return toast.error("กรุณาเลือกวันที่ยืม");
     }
+
     if (!returnDate) {
       return toast.error("กรุณาเลือกวันที่คืน");
     }
 
-    await axios.put("api/borrowings", {
+    const borrowing: Borrowing = {
       borrowerName,
       department,
       device,
       serialNumber,
       quantity,
-      borrowDate,
-      returnDate,
+      borrowDate: borrowDate.toISOString(),
+      returnDate: returnDate.toISOString(),
       id: data.id,
-    });
+      status: data.status,
+    };
 
-    location.reload();
+    const response = await borrowingsService.updateBorrowing(borrowing);
+
+    if (response.status === 200) {
+      updateBorrowing({
+        borrowerName,
+        department,
+        device,
+        serialNumber,
+        quantity,
+        borrowDate: borrowDate.toISOString(),
+        returnDate: returnDate.toISOString(),
+        id: data.id,
+        status: data.status,
+      });
+      toast.success(response.data.message);
+    }
+
+    document.getElementById("cancel-button")?.click();
   };
 
   return (
@@ -196,7 +216,11 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button onClick={handleCancelClick} variant="outline">
+              <Button
+                id="cancel-button"
+                onClick={handleCancelClick}
+                variant="outline"
+              >
                 ยกเลิก
               </Button>
             </DialogClose>

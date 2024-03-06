@@ -1,21 +1,25 @@
 "use client";
+import { useEffect } from "react";
+import { useStore } from "@nanostores/react";
+import { $borrowings, setBorrowings } from "@/stores/borrowings";
+import * as borrowingsService from "@/services/borrowingsService";
 import BorrowingsTable from "@/components/tables/borrowings-table";
-import axios from "axios";
-import { useEffect, useState } from "react";
 
 const Home = () => {
-  const [data, setData] = useState([]);
-
-  const loadData = async () => {
-    const res = await axios.get("api/borrowings");
-    setData(res.data);
-  };
+  const borrowings = useStore($borrowings);
 
   useEffect(() => {
-    loadData();
+    const abortController = new AbortController();
+
+    (async () => {
+      const response = await borrowingsService.getBorrowings();
+      setBorrowings(response.data);
+    })();
+
+    return () => abortController.abort();
   }, []);
 
-  return <BorrowingsTable data={data} />;
+  return <BorrowingsTable borrowings={borrowings} />;
 };
 
 export default Home;

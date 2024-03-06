@@ -24,7 +24,7 @@ export async function DELETE(request: NextRequest) {
 
   cn.end();
 
-  return Response.json({ message: "Borrowing deleted" });
+  return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกลบแล้ว" });
 }
 
 export async function POST(request: NextRequest) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
   cn.end();
 
-  return Response.json({ message: "Borrowing added" });
+  return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกเพิ่มแล้ว" });
 }
 
 export async function PUT(request: NextRequest) {
@@ -90,7 +90,7 @@ export async function PUT(request: NextRequest) {
 
   cn.end();
 
-  return Response.json({ message: "Borrowing updated" });
+  return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกอัพเดตแล้ว" });
 }
 
 export async function PATCH(request: NextRequest) {
@@ -102,5 +102,7 @@ export async function PATCH(request: NextRequest) {
 
   cn.end();
 
-  return Response.json({ message: "Borrowing status updated" });
+  return Response.json({
+    message: "สถานะการยืม-คืนอุปกรณ์ถูกอัพเดตแล้ว",
+  });
 }

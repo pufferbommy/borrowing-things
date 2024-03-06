@@ -23,7 +23,9 @@ import { Calendar } from "../ui/calendar";
 import { cn } from "@/lib/utils";
 import { th } from "date-fns/locale";
 import { toast } from "sonner";
-import axios from "axios";
+import { Borrowing } from "@/interfaces/borrowing";
+import * as borrowingsService from "@/services/borrowingsService";
+import { setBorrowings } from "@/stores/borrowings";
 
 const BorrowDialog = () => {
   const [borrowerName, setBorrowerName] = useState<string>("");
@@ -50,21 +52,31 @@ const BorrowDialog = () => {
     if (!borrowDate) {
       return toast.error("กรุณาเลือกวันที่ยืม");
     }
+
     if (!returnDate) {
       return toast.error("กรุณาเลือกวันที่คืน");
     }
 
-    await axios.post("api/borrowings", {
+    const borrowing: Omit<Omit<Borrowing, "id">, "status"> = {
       borrowerName,
       department,
       device,
       serialNumber,
       quantity,
-      borrowDate,
-      returnDate,
-    });
+      borrowDate: borrowDate.toISOString(),
+      returnDate: returnDate.toISOString(),
+    };
 
-    location.reload();
+    const response = await borrowingsService.createBorrowing(borrowing);
+    toast.success(response.data.message);
+
+    if (response.status === 200) {
+      document.getElementById("cancel-button")?.click();
+      (async () => {
+        const response = await borrowingsService.getBorrowings();
+        setBorrowings(response.data);
+      })();
+    }
   };
 
   return (
@@ -188,7 +200,11 @@ const BorrowDialog = () => {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button onClick={handleCancelClick} variant="outline">
+              <Button
+                id="cancel-button"
+                onClick={handleCancelClick}
+                variant="outline"
+              >
                 ยกเลิก
               </Button>
             </DialogClose>
