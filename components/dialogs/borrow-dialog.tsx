@@ -35,6 +35,7 @@ const BorrowDialog = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [borrowDate, setBorrowDate] = useState<Date>();
   const [returnDate, setReturnDate] = useState<Date>();
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const handleCancelClick = () => {
     setBorrowerName("");
@@ -67,16 +68,21 @@ const BorrowDialog = () => {
       returnDate: returnDate.toISOString(),
     };
 
+    setIsCreating(true);
+
     const response = await borrowingsService.createBorrowing(borrowing);
     toast.success(response.data.message);
 
     if (response.status === 200) {
-      document.getElementById("cancel-button")?.click();
-      (async () => {
-        const response = await borrowingsService.getBorrowings();
-        setBorrowings(response.data);
-      })();
+      const response = await borrowingsService.getBorrowings();
+      setBorrowings(response.data);
     }
+
+    setIsCreating(false);
+
+    setTimeout(() => {
+      document.getElementById("cancel-button")?.click();
+    }, 0);
   };
 
   return (
@@ -84,7 +90,10 @@ const BorrowDialog = () => {
       <DialogTrigger asChild>
         <Button>สร้างการยืมอุปกรณ์</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onOverlayClick={() => document.getElementById("cancel-button")?.click()}
+        onCloseClick={() => document.getElementById("cancel-button")?.click()}
+      >
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>สร้างการยืมอุปกรณ์</DialogTitle>
@@ -201,6 +210,7 @@ const BorrowDialog = () => {
           <DialogFooter>
             <DialogClose asChild>
               <Button
+                disabled={isCreating}
                 id="cancel-button"
                 onClick={handleCancelClick}
                 variant="outline"
@@ -208,7 +218,9 @@ const BorrowDialog = () => {
                 ยกเลิก
               </Button>
             </DialogClose>
-            <Button type="submit">ยืนยัน</Button>
+            <Button disabled={isCreating} type="submit">
+              {isCreating ? "กำลังสร้าง..." : "สร้าง"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

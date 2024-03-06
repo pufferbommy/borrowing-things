@@ -15,7 +15,7 @@ import DeleteBorrowingAlertDialog from "@/components/alert-dialogs/delete-borrow
 import EditBorrowDialog from "@/components/dialogs/edit-borrow-dialog";
 import * as borrowingsService from "@/services/borrowingsService";
 import { Borrowing } from "@/interfaces/borrowing";
-import { updateBorrowing } from "@/stores/borrowings";
+import { setBorrowings } from "@/stores/borrowings";
 import { toast } from "sonner";
 
 export const columns: ColumnDef<Borrowing>[] = [
@@ -49,10 +49,10 @@ export const columns: ColumnDef<Borrowing>[] = [
               .updateBorrowingStatus(row.original.id, value)
               .then((response) => {
                 if (response.status === 200) {
-                  updateBorrowing({
-                    ...row.original,
-                    status: value,
-                  });
+                  (async () => {
+                    const response = await borrowingsService.getBorrowings();
+                    setBorrowings(response.data);
+                  })();
                   toast.success(response.data.message);
                 }
               });

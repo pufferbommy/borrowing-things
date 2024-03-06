@@ -15,14 +15,19 @@ import { TrashIcon } from "lucide-react";
 import * as borrowingsService from "@/services/borrowingsService";
 import { removeBorrowing } from "@/stores/borrowings";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const DeleteBorrowingAlertDialog = ({ id }: { id: number }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleActionClick = async () => {
+    setIsDeleting(true);
     const response = await borrowingsService.deleteBorrowing(id);
     if (response.status === 200) {
       removeBorrowing(id);
       toast.success(response.data.message);
     }
+    setIsDeleting(false);
   };
 
   return (
@@ -40,9 +45,9 @@ const DeleteBorrowingAlertDialog = ({ id }: { id: number }) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-          <AlertDialogAction onClick={handleActionClick}>
-            ยืนยัน
+          <AlertDialogCancel disabled={isDeleting}>ยกเลิก</AlertDialogCancel>
+          <AlertDialogAction disabled={isDeleting} onClick={handleActionClick}>
+            {isDeleting ? "กำลังลบ..." : "ลบ"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

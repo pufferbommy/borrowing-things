@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -39,15 +39,16 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
   const [returnDate, setReturnDate] = useState<Date | undefined>(
     new Date(data.returnDate)
   );
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   const handleCancelClick = () => {
-    setBorrowerName("");
-    setDepartment("");
-    setDevice("");
-    setSerialNumber("");
-    setQuantity(1);
-    setBorrowDate(undefined);
-    setReturnDate(undefined);
+    setBorrowerName(data.borrowerName);
+    setDepartment(data.department);
+    setDevice(data.device);
+    setSerialNumber(data.serialNumber);
+    setQuantity(data.quantity);
+    setBorrowDate(new Date(data.borrowDate));
+    setReturnDate(new Date(data.returnDate));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -73,25 +74,31 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
       status: data.status,
     };
 
+    setIsUpdating(true);
+
     const response = await borrowingsService.updateBorrowing(borrowing);
 
     if (response.status === 200) {
-      updateBorrowing({
-        borrowerName,
-        department,
-        device,
-        serialNumber,
-        quantity,
-        borrowDate: borrowDate.toISOString(),
-        returnDate: returnDate.toISOString(),
-        id: data.id,
-        status: data.status,
-      });
+      updateBorrowing(borrowing);
       toast.success(response.data.message);
     }
 
-    document.getElementById("cancel-button")?.click();
+    setIsUpdating(false);
+
+    setTimeout(() => {
+      document.getElementById("cancel-button")?.click();
+    }, 0);
   };
+
+  useEffect(() => {
+    setBorrowerName(data.borrowerName);
+    setDepartment(data.department);
+    setDevice(data.device);
+    setSerialNumber(data.serialNumber);
+    setQuantity(data.quantity);
+    setBorrowDate(new Date(data.borrowDate));
+    setReturnDate(new Date(data.returnDate));
+  }, [data]);
 
   return (
     <Dialog>
@@ -100,7 +107,10 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
           <PenIcon size={14} />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        onOverlayClick={() => document.getElementById("cancel-button")?.click()}
+        onCloseClick={() => document.getElementById("cancel-button")?.click()}
+      >
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>แก้ไขการยืมอุปกรณ์</DialogTitle>
@@ -224,7 +234,9 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
                 ยกเลิก
               </Button>
             </DialogClose>
-            <Button type="submit">ยืนยัน</Button>
+            <Button disabled={isUpdating} type="submit">
+              {isUpdating ? "กำลังอัพเดต..." : "อัพเดต"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

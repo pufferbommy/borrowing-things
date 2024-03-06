@@ -10,7 +10,7 @@ interface BorrowingsTableProps {
 const BorrowingsTable = ({ borrowings = [] }: BorrowingsTableProps) => {
   return (
     <div>
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between gap-4 flex-wrap">
         <h1 className="text-3xl font-bold">
           การยืม-คืนอุปกรณ์ ({borrowings.length})
         </h1>
