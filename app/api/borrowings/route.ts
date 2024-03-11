@@ -41,9 +41,16 @@ export async function POST(request: NextRequest) {
 
   const client = await connectToDb();
 
+  const res = await client.query(
+    "SELECT id FROM borrowings ORDER BY id DESC LIMIT 1"
+  );
+
+  const id = res.rows[0].id + 1;
+
   await client.query({
-    text: "INSERT INTO borrowings(status, borrower_name, device, serial_number, quantity, department, borrow_date, return_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8)",
+    text: "INSERT INTO borrowings(id, status, borrower_name, device, serial_number, quantity, department, borrow_date, return_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)",
     values: [
+      id,
       status,
       borrower_name,
       device,

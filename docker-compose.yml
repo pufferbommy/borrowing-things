@@ -1,6 +1,20 @@
-version: "3.1"
+version: "3.7"
 
 services:
+  # app:
+  #   image: pufferbommy/borrowing-things:latest
+  #   container_name: borrowing-things
+  #   environment:
+  #     PGHOST: ${PGHOST}
+  #     PGDATABASE: ${PGDATABASE}
+  #     PGUSER: ${PGUSER}
+  #     PGPASSWORD: ${PGPASSWORD}
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - my_network
+  #   depends_on:
+  #     - postgres
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -13,6 +27,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - my_network
+
+networks:
+  my_network:
 
 volumes:
   postgres_data:
