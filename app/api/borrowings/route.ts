@@ -2,60 +2,60 @@ import { connectToDb } from "@/lib/db";
 import { type NextRequest } from "next/server";
 
 export async function GET() {
-  const cn = await connectToDb();
+  const client = await connectToDb();
 
-  const [results] = await cn.query(
+  const result = await client.query(
     "SELECT * FROM borrowings ORDER BY status DESC"
   );
 
-  cn.end();
+  await client.end();
 
-  return Response.json(results);
+  return Response.json(result.rows);
 }
 
 export async function DELETE(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
-  const cn = await connectToDb();
+  const client = await connectToDb();
 
-  await cn.query("DELETE FROM borrowings WHERE id=?", [
+  await client.query("DELETE FROM borrowings WHERE id = $1", [
     parseInt(searchParams.get("id")!),
   ]);
 
-  cn.end();
+  await client.end();
 
   return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกลบแล้ว" });
 }
 
 export async function POST(request: NextRequest) {
+  const status = "ยังไม่คืน";
   const {
-    borrowerName,
+    borrower_name,
     device,
-    serialNumber,
+    serial_number,
     quantity,
     department,
-    borrowDate,
-    returnDate,
+    borrow_date,
+    return_date,
   } = await request.json();
-  const status = "ยังไม่คืน";
 
-  const cn = await connectToDb();
+  const client = await connectToDb();
 
-  await cn.query(
-    "INSERT INTO borrowings (status, borrowerName, device, serialNumber, quantity, department, borrowDate, returnDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    [
+  await client.query({
+    text: "INSERT INTO borrowings(status, borrower_name, device, serial_number, quantity, department, borrow_date, return_date) VALUES($1, $2, $3, $4, $5, $6, $7, $8)",
+    values: [
       status,
-      borrowerName,
+      borrower_name,
       device,
-      serialNumber,
+      serial_number,
       quantity,
       department,
-      new Date(borrowDate),
-      new Date(returnDate),
-    ]
-  );
+      new Date(borrow_date).toISOString(),
+      new Date(return_date).toISOString(),
+    ],
+  });
 
-  cn.end();
+  await client.end();
 
   return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกเพิ่มแล้ว" });
 }
@@ -63,32 +63,32 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   const {
     id,
-    borrowerName,
+    borrower_name,
     device,
-    serialNumber,
+    serial_number,
     quantity,
     department,
-    borrowDate,
-    returnDate,
+    borrow_date,
+    return_date,
   } = await request.json();
 
-  const cn = await connectToDb();
+  const client = await connectToDb();
 
-  await cn.query(
-    "UPDATE borrowings SET borrowerName=?, device=?, serialNumber=?, quantity=?, department=?, borrowDate=?, returnDate=? WHERE id=?",
-    [
-      borrowerName,
+  await client.query({
+    text: "UPDATE borrowings SET borrower_name=$1, device=$2, serial_number=$3, quantity=$4, department=$5, borrow_date=$6, return_date=$7 WHERE id=$8",
+    values: [
+      borrower_name,
       device,
-      serialNumber,
+      serial_number,
       quantity,
       department,
-      new Date(borrowDate),
-      new Date(returnDate),
+      new Date(borrow_date),
+      new Date(return_date),
       id,
-    ]
-  );
+    ],
+  });
 
-  cn.end();
+  await client.end();
 
   return Response.json({ message: "การยืม-คืนอุปกรณ์ถูกอัพเดตแล้ว" });
 }
@@ -96,11 +96,14 @@ export async function PUT(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   const { id, status } = await request.json();
 
-  const cn = await connectToDb();
+  const client = await connectToDb();
 
-  await cn.query("UPDATE borrowings SET status=? WHERE id=?", [status, id]);
+  await client.query("UPDATE borrowings SET status=$1 WHERE id=$2", [
+    status,
+    id,
+  ]);
 
-  cn.end();
+  await client.end();
 
   return Response.json({
     message: "สถานะการยืม-คืนอุปกรณ์ถูกอัพเดตแล้ว",

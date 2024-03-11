@@ -1,11 +1,11 @@
 export interface Borrowing {
   id: number;
   status: string;
-  borrowerName: string;
+  borrower_name: string;
   device: string;
-  serialNumber: string;
+  serial_number: string;
   quantity: number;
-  borrowDate: string;
-  returnDate: string;
+  borrow_date: string;
+  return_date: string;
   department: string;
 }

@@ -59,13 +59,13 @@ const BorrowDialog = () => {
     }
 
     const borrowing: Omit<Omit<Borrowing, "id">, "status"> = {
-      borrowerName,
+      borrower_name: borrowerName,
       department,
       device,
-      serialNumber,
+      serial_number: serialNumber,
       quantity,
-      borrowDate: borrowDate.toISOString(),
-      returnDate: returnDate.toISOString(),
+      borrow_date: borrowDate.toISOString(),
+      return_date: returnDate.toISOString(),
     };
 
     setIsCreating(true);

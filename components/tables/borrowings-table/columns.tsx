@@ -70,7 +70,7 @@ export const columns: ColumnDef<Borrowing>[] = [
     },
   },
   {
-    accessorKey: "borrowerName",
+    accessorKey: "borrower_name",
     header: "ชื่อผู้ยืม",
   },
   {
@@ -82,7 +82,7 @@ export const columns: ColumnDef<Borrowing>[] = [
     header: "อุปกรณ์",
   },
   {
-    accessorKey: "serialNumber",
+    accessorKey: "serial_number",
     header: "Serial Number",
   },
   {
@@ -90,18 +90,18 @@ export const columns: ColumnDef<Borrowing>[] = [
     header: "จำนวน",
   },
   {
-    accessorKey: "borrowDate",
+    accessorKey: "borrow_date",
     header: "วันที่ยืม",
     cell: ({ row }) =>
-      format(new Date(row.getValue("borrowDate")), "dd MMMM yyyy", {
+      format(new Date(row.getValue("borrow_date")), "dd MMMM yyyy", {
         locale: th,
       }),
   },
   {
-    accessorKey: "returnDate",
+    accessorKey: "return_date",
     header: "วันที่คืน",
     cell: ({ row }) =>
-      format(new Date(row.getValue("returnDate")), "dd MMMM yyyy", {
+      format(new Date(row.getValue("return_date")), "dd MMMM yyyy", {
         locale: th,
       }),
   },

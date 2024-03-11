@@ -1,12 +1,14 @@
-import mysql from "mysql2/promise";
+import { Client } from "pg";
 
 const connectToDb = async () => {
-  return mysql.createConnection({
-    host: "mysql",
-    user: "root",
-    password: "root",
-    database: "borrowing_things",
+  const client = new Client({
+    host: process.env.PGHOST,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
   });
+  await client.connect();
+  return client;
 };
 
 export { connectToDb };

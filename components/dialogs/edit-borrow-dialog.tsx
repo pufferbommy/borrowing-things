@@ -28,27 +28,27 @@ import { updateBorrowing } from "@/stores/borrowings";
 import * as borrowingsService from "@/services/borrowingsService";
 
 const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
-  const [borrowerName, setBorrowerName] = useState<string>(data.borrowerName);
+  const [borrowerName, setBorrowerName] = useState<string>(data.borrower_name);
   const [department, setDepartment] = useState<string>(data.department);
   const [device, setDevice] = useState<string>(data.device);
-  const [serialNumber, setSerialNumber] = useState<string>(data.serialNumber);
+  const [serialNumber, setSerialNumber] = useState<string>(data.serial_number);
   const [quantity, setQuantity] = useState<number>(data.quantity);
   const [borrowDate, setBorrowDate] = useState<Date | undefined>(
-    new Date(data.borrowDate)
+    new Date(data.borrow_date)
   );
   const [returnDate, setReturnDate] = useState<Date | undefined>(
-    new Date(data.returnDate)
+    new Date(data.return_date)
   );
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
   const handleCancelClick = () => {
-    setBorrowerName(data.borrowerName);
+    setBorrowerName(data.borrower_name);
     setDepartment(data.department);
     setDevice(data.device);
-    setSerialNumber(data.serialNumber);
+    setSerialNumber(data.serial_number);
     setQuantity(data.quantity);
-    setBorrowDate(new Date(data.borrowDate));
-    setReturnDate(new Date(data.returnDate));
+    setBorrowDate(new Date(data.borrow_date));
+    setReturnDate(new Date(data.return_date));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -63,13 +63,13 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
     }
 
     const borrowing: Borrowing = {
-      borrowerName,
+      borrower_name: borrowerName,
       department,
       device,
-      serialNumber,
+      serial_number: serialNumber,
       quantity,
-      borrowDate: borrowDate.toISOString(),
-      returnDate: returnDate.toISOString(),
+      borrow_date: borrowDate.toISOString(),
+      return_date: returnDate.toISOString(),
       id: data.id,
       status: data.status,
     };
@@ -91,13 +91,13 @@ const EditBorrowDialog = ({ data }: { data: Borrowing }) => {
   };
 
   useEffect(() => {
-    setBorrowerName(data.borrowerName);
+    setBorrowerName(data.borrower_name);
     setDepartment(data.department);
     setDevice(data.device);
-    setSerialNumber(data.serialNumber);
+    setSerialNumber(data.serial_number);
     setQuantity(data.quantity);
-    setBorrowDate(new Date(data.borrowDate));
-    setReturnDate(new Date(data.returnDate));
+    setBorrowDate(new Date(data.borrow_date));
+    setReturnDate(new Date(data.return_date));
   }, [data]);
 
   return (
