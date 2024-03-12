@@ -6,6 +6,7 @@ const connectToDb = async () => {
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
+    port: parseInt(process.env.PGPORT!),
   });
   await client.connect();
   return client;
